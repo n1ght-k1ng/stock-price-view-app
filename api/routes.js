@@ -12,6 +12,8 @@ import postFavorite from '../controllers/postFavorite.js';
 import deleteFavorite from '../controllers/deleteFavorite.js';
 import getFavorites from '../controllers/getFavorites.js';
 import getTimeUntilEndOfDayInSeconds from '../utils/getEOD.js';
+import removeDataBefore50thDay from '../controllers/removeDataBefore50thDay.js';
+import fetchStockInfo from '../controllers/fetchStockInfo.js';
 
 const cache = new NodeCache({ stdTTL: 300 });
 
@@ -27,7 +29,7 @@ const cacheMiddleware = (ttl) => (req, res, next) => {
     next();
 }
 
-
+router.get('/',cacheMiddleware(getTimeUntilEndOfDayInSeconds()) , removeDataBefore50thDay ,fetchStockInfo) // refreshing data
 router.get('/stock-by-date/:date' , cacheMiddleware(60 * 60 * 24 * 5) , validateDateFormat ,getStockByDate);  // checked
 router.get('/top10stocks',cacheMiddleware(getTimeUntilEndOfDayInSeconds()) , getTop10Stocks);  // checked
 router.get('/stock-by-name/:name', cacheMiddleware(getTimeUntilEndOfDayInSeconds()),  getStockByName); // checked

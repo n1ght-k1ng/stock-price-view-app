@@ -1,7 +1,9 @@
 import StockModel from "../models/Stock.js";
-async function removeDataBefore50thDay() {
+async function removeDataBefore50thDay(req, res , next) {
     try {
       // Calculate the date of 51 days before the current date
+      console.log("Refreshing data");
+      console.log("Removing data before 50th day")
       const currentDate = new Date();
       const dateBefore51Days = new Date(currentDate);
       dateBefore51Days.setDate(currentDate.getDate() - 50);
@@ -14,8 +16,6 @@ async function removeDataBefore50thDay() {
 
 
       const formattedDate = `${year}-${month}-${day}`;
-  
-      // Create a query to delete documents with a date before the 51st day
       const deleteQuery = { date: { $lt: formattedDate } };
   
       // Execute the delete operation
@@ -25,6 +25,8 @@ async function removeDataBefore50thDay() {
     } catch (error) {
       console.error('Error removing previous data:, Holiday');
     } 
+
+    next();
   }
 
 export default removeDataBefore50thDay;

@@ -17,13 +17,13 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function fetchStockInfo() {
+async function fetchStockInfo(req,res) {
   // const StockModel = require('../models/Stock');
-    mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    // mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
   const currentDate = new Date();
   const baseUrl = 'https://www.bseindia.com/download/BhavCopy/Equity/';
-  console.log('Fetching and refreshing data');
+  console.log('Fetching and Uploading new data');
   for (let i = 0; i < 50; i++) {
     const date = new Date(currentDate);
     date.setDate(date.getDate() - i - 1);
@@ -39,7 +39,7 @@ async function fetchStockInfo() {
     const existingData = await StockModel.findOne({ date :  formattedDate });
     if (existingData) {
       console.log('Data already exists in MongoDB. Date:', existingData.date);
-      continue;
+      break; // Stop the loop if data already exists and skip the rest of the iterations since it takes time;
     }
     await sleep(2000);
 
@@ -100,8 +100,7 @@ async function fetchStockInfo() {
   }
 
   // Close MongoDB connection after all iterations
-  await sleep(5000)
-  mongoose.connection.close();
+  res.json('Data updated API ready to Use');
 }
 
 
